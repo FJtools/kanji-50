@@ -41,7 +41,7 @@ body{
 .main{ padding: 10px; }
 #pad{
   width: 100%;
-  height: calc(100vh - var(--topbar-h, 280px) - 18px);
+  height: calc(100vh - 330px);
   background: var(--pad-bg);
   border: 1px solid #e0e0e0;
   border-radius: 14px;
@@ -76,39 +76,3 @@ dialog::backdrop{ background: rgba(0,0,0,.25); }
 .sel{ width:100%; padding: 8px; border-radius: 10px; border:1px solid #ddd; background:#fff; }
 .small{ width:100%; padding: 8px; border-radius: 10px; border:1px solid #ddd; background:#fff; }
 .iconBtn{ width: 42px; height: 38px; border-radius: 10px; border:1px solid #ddd; background:#fff; cursor:pointer; }
-
-
-.scaleCtl{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  padding: 6px 10px;
-  border:1px solid #e0e0e0;
-  border-radius: 12px;
-  background:#fff;
-}
-#boxScaleSlider{
-  width: min(260px, 60vw);
-}
-
-
-/* --- UI compact/minimal --- */
-body.compact .btn{ padding: 6px 8px; font-size: 12px; border-radius: 9px; }
-body.compact .qbox{ padding: 6px 8px; }
-body.compact .prompt{ font-size: 16px; }
-body.compact .answerline{ font-size: 12px; }
-
-
-
-
-/* Always-visible minimal buttons under question */
-.miniControls{
-  display:flex;
-  flex-wrap: wrap;
-  gap:10px;
-  align-items:center;
-  margin-bottom: 8px;
-}
-#moreBtn{ background:#fff; }
-
-
