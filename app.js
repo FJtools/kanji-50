@@ -1,5 +1,5 @@
 /* v3.5 - 編集機能つき（問題データ編集/書き出し/読込） */
-const APP_DATA_VERSION = "3.10";
+const APP_DATA_VERSION = "3.11";
 
 const LS_KEYS = {
   dataVersion: "kanji_data_version",
