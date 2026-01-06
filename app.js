@@ -1,45 +1,31 @@
 /* v3.5 - 編集機能つき（問題データ編集/書き出し/読込） */
-const APP_DATA_VERSION = "3.21";
+const APP_DATA_VERSION = "3.22";
 
 const LS_KEYS = {
   dataVersion: "kanji_data_version",
   items: "kanji_items_v3_ruby_units",
-  idx: "kanji_idx_practice_only_v3",
-  strokesPrefix: "kanji_strokes_practice_only_v3_",
-  boxScaleOffset: "kanji_box_scale_offset_v3",
+  mode: "kanji_mode_v3",
+  idxPractice: "kanji_idx_practice_v3",
+  idxTest: "kanji_idx_test_v3",
+  strokesPrefixPractice: "kanji_strokes_practice_v3_",
+  strokesPrefixTest: "kanji_strokes_test_v3_",
+  testRun: "kanji_test_run_v3",
+  testHistory: "kanji_test_history_v3",
 };
-
-
-function lsGet(key){
-  try { return lsGet(key); } catch(e){ return null; }
-}
-function lsSet(key, val){
-  try { lsSet(key, val); } catch(e){}
-}
-function lsRemove(key){
-  try { lsRemove(key); } catch(e){}
-}
-function lsKeys(){
-  try {
-    const out = [];
-    for (let i=0; i<localStorage.length; i++){
-      const k = localStorage.key(i);
-      if (k) out.push(k);
-    }
-    return out;
-  } catch(e){ return []; }
-}
-
 
 const defaultItems = [{"qRuby": "<ruby>一定<rt>いってい</rt></ruby>の”ひょう”<ruby>価<rt>か</rt></ruby>", "answerFull": "一定の評価", "units": [{"kind": "blank", "expected": "評", "reading": "ひょう"}, {"kind": "fixed", "char": "価", "reading": "か"}]}, {"qRuby": "<ruby>新<rt>しん</rt></ruby>”がた”の<ruby>船<rt>ふね</rt></ruby>", "answerFull": "新型の船", "units": [{"kind": "fixed", "char": "新", "reading": "しん"}, {"kind": "blank", "expected": "型", "reading": "がた"}]}, {"qRuby": "”き”<ruby>本<rt>ほん</rt></ruby>に<ruby>返<rt>かえ</rt></ruby>る", "answerFull": "基本に返る", "units": [{"kind": "blank", "expected": "基", "reading": "き"}, {"kind": "fixed", "char": "本", "reading": "ほん"}]}, {"qRuby": "<ruby>食<rt>しょく</rt></ruby><ruby>料<rt>りょう</rt></ruby>の”てい”<ruby>供<rt>きょう</rt></ruby>", "answerFull": "食料の提供", "units": [{"kind": "blank", "expected": "提", "reading": "てい"}, {"kind": "fixed", "char": "供", "reading": "きょう"}]}, {"qRuby": "<ruby>古<rt>ふる</rt></ruby>い<ruby>建<rt>けん</rt></ruby>”ちく”<ruby>物<rt>ぶつ</rt></ruby>", "answerFull": "古い建築物", "units": [{"kind": "fixed", "char": "建", "reading": "けん"}, {"kind": "blank", "expected": "築", "reading": "ちく"}, {"kind": "fixed", "char": "物", "reading": "ぶつ"}]}, {"qRuby": "”つま”の<ruby>名<rt>な</rt></ruby><ruby>前<rt>まえ</rt></ruby>", "answerFull": "妻の名前", "units": [{"kind": "blank", "expected": "妻", "reading": "つま"}]}, {"qRuby": "<ruby>温<rt>おん</rt></ruby><ruby>度<rt>ど</rt></ruby>の”せっ”<ruby>定<rt>てい</rt></ruby>", "answerFull": "温度の設定", "units": [{"kind": "blank", "expected": "設", "reading": "せっ"}, {"kind": "fixed", "char": "定", "reading": "てい"}]}, {"qRuby": "”ちょ”<ruby>金<rt>きん</rt></ruby>をする", "answerFull": "貯金をする", "units": [{"kind": "blank", "expected": "貯", "reading": "ちょ"}, {"kind": "fixed", "char": "金", "reading": "きん"}]}, {"qRuby": "<ruby>栄<rt>えい</rt></ruby><ruby>養<rt>よう</rt></ruby>”そ”", "answerFull": "栄養素", "units": [{"kind": "fixed", "char": "栄", "reading": "えい"}, {"kind": "fixed", "char": "養", "reading": "よう"}, {"kind": "blank", "expected": "素", "reading": "そ"}]}, {"qRuby": "<ruby>炭<rt>たん</rt></ruby>”さん”<ruby>水<rt>すい</rt></ruby>", "answerFull": "炭酸水", "units": [{"kind": "fixed", "char": "炭", "reading": "たん"}, {"kind": "blank", "expected": "酸", "reading": "さん"}, {"kind": "fixed", "char": "水", "reading": "すい"}]}, {"qRuby": "”よ”り<ruby>道<rt>みち</rt></ruby>", "answerFull": "寄り道", "units": [{"kind": "blank", "expected": "寄", "reading": "よ"}, {"kind": "fixed", "char": "り"}, {"kind": "fixed", "char": "道", "reading": "みち"}]}, {"qRuby": "”しょう”<ruby>明<rt>めい</rt></ruby><ruby>書<rt>しょ</rt></ruby>", "answerFull": "証明書", "units": [{"kind": "blank", "expected": "証", "reading": "しょう"}, {"kind": "fixed", "char": "明", "reading": "めい"}, {"kind": "fixed", "char": "書", "reading": "しょ"}]}, {"qRuby": "<ruby>薬<rt>くすり</rt></ruby>の”こう”<ruby>果<rt>か</rt></ruby>", "answerFull": "薬の効果", "units": [{"kind": "blank", "expected": "効", "reading": "こう"}, {"kind": "fixed", "char": "果", "reading": "か"}]}, {"qRuby": "<ruby>血<rt>けつ</rt></ruby>”えき”の<ruby>成<rt>せい</rt></ruby><ruby>分<rt>ぶん</rt></ruby>", "answerFull": "血液の成分", "units": [{"kind": "fixed", "char": "血", "reading": "けつ"}, {"kind": "blank", "expected": "液", "reading": "えき"}]}, {"qRuby": "<ruby>説<rt>せつ</rt></ruby>”とく”<ruby>力<rt>りょく</rt></ruby>", "answerFull": "説得力", "units": [{"kind": "fixed", "char": "説", "reading": "せつ"}, {"kind": "blank", "expected": "得", "reading": "とく"}, {"kind": "fixed", "char": "力", "reading": "りょく"}]}, {"qRuby": "<ruby>車<rt>くるま</rt></ruby>の<ruby>通<rt>つう</rt></ruby>”か”", "answerFull": "車の通過", "units": [{"kind": "fixed", "char": "通", "reading": "つう"}, {"kind": "blank", "expected": "過", "reading": "か"}]}, {"qRuby": "”こ”み<ruby>合<rt>あ</rt></ruby>う<ruby>駅<rt>えき</rt></ruby>", "answerFull": "混み合う駅", "units": [{"kind": "blank", "expected": "混", "reading": "こ"}, {"kind": "fixed", "char": "み"}, {"kind": "fixed", "char": "合", "reading": "あ"}, {"kind": "fixed", "char": "う"}]}, {"qRuby": "<ruby>人<rt>じん</rt></ruby><ruby>口<rt>こう</rt></ruby>の<ruby>分<rt>ぶん</rt></ruby>”ぶ”", "answerFull": "人口の分布", "units": [{"kind": "fixed", "char": "分", "reading": "ぶん"}, {"kind": "blank", "expected": "布", "reading": "ぶ"}]}, {"qRuby": "<ruby>多<rt>おお</rt></ruby>くの”ざい”<ruby>産<rt>さん</rt></ruby>", "answerFull": "多くの財産", "units": [{"kind": "blank", "expected": "財", "reading": "ざい"}, {"kind": "fixed", "char": "産", "reading": "さん"}]}, {"qRuby": "<ruby>主<rt>しゅ</rt></ruby>”ちょう”する<ruby>説<rt>せつ</rt></ruby>", "answerFull": "主張する説", "units": [{"kind": "fixed", "char": "主", "reading": "しゅ"}, {"kind": "blank", "expected": "張", "reading": "ちょう"}]}, {"qRuby": "<ruby>必<rt>ひつ</rt></ruby><ruby>要<rt>よう</rt></ruby>な<ruby>条<rt>じょう</rt></ruby>”けん”", "answerFull": "必要な条件", "units": [{"kind": "fixed", "char": "条", "reading": "じょう"}, {"kind": "blank", "expected": "件", "reading": "けん"}]}, {"qRuby": "”ざつ”<ruby>音<rt>おん</rt></ruby>が<ruby>多<rt>おお</rt></ruby>い", "answerFull": "雑音が多い", "units": [{"kind": "blank", "expected": "雑", "reading": "ざつ"}, {"kind": "fixed", "char": "音", "reading": "おん"}]}, {"qRuby": "<ruby>交<rt>こう</rt></ruby><ruby>通<rt>つう</rt></ruby><ruby>事<rt>じ</rt></ruby>”こ”", "answerFull": "交通事故", "units": [{"kind": "fixed", "char": "事", "reading": "じ"}, {"kind": "blank", "expected": "故", "reading": "こ"}]}, {"qRuby": "<ruby>大<rt>おお</rt></ruby>きな<ruby>組<rt>そ</rt></ruby>”しき”", "answerFull": "大きな組織", "units": [{"kind": "fixed", "char": "組", "reading": "そ"}, {"kind": "blank", "expected": "織", "reading": "しき"}]}, {"qRuby": "”さん”<ruby>成<rt>せい</rt></ruby>の<ruby>立<rt>たち</rt></ruby><ruby>場<rt>ば</rt></ruby>", "answerFull": "賛成の立場", "units": [{"kind": "blank", "expected": "賛", "reading": "さん"}, {"kind": "fixed", "char": "成", "reading": "せい"}]}, {"qRuby": "”とう”<ruby>計<rt>けい</rt></ruby><ruby>資<rt>し</rt></ruby><ruby>料<rt>りょう</rt></ruby>", "answerFull": "統計資料", "units": [{"kind": "blank", "expected": "統", "reading": "とう"}, {"kind": "fixed", "char": "計", "reading": "けい"}]}, {"qRuby": "<ruby>大<rt>だい</rt></ruby><ruby>学<rt>がく</rt></ruby>の<ruby>教<rt>きょう</rt></ruby>”じゅ”", "answerFull": "大学の教授", "units": [{"kind": "fixed", "char": "教", "reading": "きょう"}, {"kind": "blank", "expected": "授", "reading": "じゅ"}]}, {"qRuby": "<ruby>昔<rt>むかし</rt></ruby>の”き”<ruby>行<rt>こう</rt></ruby><ruby>文<rt>ぶん</rt></ruby>", "answerFull": "昔の紀行文", "units": [{"kind": "blank", "expected": "紀", "reading": "き"}, {"kind": "fixed", "char": "行", "reading": "こう"}]}, {"qRuby": "”せき”<ruby>任<rt>にん</rt></ruby>をとる", "answerFull": "責任をとる", "units": [{"kind": "blank", "expected": "責", "reading": "せき"}, {"kind": "fixed", "char": "任", "reading": "にん"}]}, {"qRuby": "<ruby>数<rt>かず</rt></ruby>の”げん”<ruby>少<rt>しょう</rt></ruby>", "answerFull": "数の減少", "units": [{"kind": "blank", "expected": "減", "reading": "げん"}, {"kind": "fixed", "char": "少", "reading": "しょう"}]}, {"qRuby": "<ruby>荷<rt>に</rt></ruby><ruby>物<rt>もつ</rt></ruby>の”けん”<ruby>査<rt>さ</rt></ruby>", "answerFull": "荷物の検査", "units": [{"kind": "blank", "expected": "検", "reading": "けん"}, {"kind": "fixed", "char": "査", "reading": "さ"}]}, {"qRuby": "<ruby>大<rt>たい</rt></ruby><ruby>会<rt>かい</rt></ruby>の<ruby>日<rt>にっ</rt></ruby>”てい”", "answerFull": "大会の日程", "units": [{"kind": "fixed", "char": "日", "reading": "にっ"}, {"kind": "blank", "expected": "程", "reading": "てい"}]}, {"qRuby": "<ruby>虫<rt>むし</rt></ruby>の”さい”<ruby>集<rt>しゅう</rt></ruby>", "answerFull": "虫の採集", "units": [{"kind": "blank", "expected": "採", "reading": "さい"}, {"kind": "fixed", "char": "集", "reading": "しゅう"}]}, {"qRuby": "”こ”<ruby>人<rt>じん</rt></ruby><ruby>競<rt>きょう</rt></ruby><ruby>技<rt>ぎ</rt></ruby>", "answerFull": "個人競技", "units": [{"kind": "blank", "expected": "個", "reading": "こ"}, {"kind": "fixed", "char": "人", "reading": "じん"}]}, {"qRuby": "<ruby>省<rt>しょう</rt></ruby>”りゃく”する", "answerFull": "省略する", "units": [{"kind": "fixed", "char": "省", "reading": "しょう"}, {"kind": "blank", "expected": "略", "reading": "りゃく"}]}, {"qRuby": "”きゅう”<ruby>道<rt>どう</rt></ruby>を<ruby>走<rt>はし</rt></ruby>る", "answerFull": "旧道を走る", "units": [{"kind": "blank", "expected": "旧", "reading": "きゅう"}, {"kind": "fixed", "char": "道", "reading": "どう"}]}, {"qRuby": "<ruby>日<rt>に</rt></ruby><ruby>本<rt>ほん</rt></ruby>の<ruby>山<rt>さん</rt></ruby>”みゃく”", "answerFull": "日本の山脈", "units": [{"kind": "fixed", "char": "山", "reading": "さん"}, {"kind": "blank", "expected": "脈", "reading": "みゃく"}]}, {"qRuby": "<ruby>養<rt>よう</rt></ruby>”ご”の<ruby>先<rt>せん</rt></ruby><ruby>生<rt>せい</rt></ruby>", "answerFull": "養護の先生", "units": [{"kind": "fixed", "char": "養", "reading": "よう"}, {"kind": "blank", "expected": "護", "reading": "ご"}]}, {"qRuby": "”き”<ruby>則<rt>そく</rt></ruby>を<ruby>守<rt>まも</rt></ruby>る", "answerFull": "規則を守る", "units": [{"kind": "blank", "expected": "規", "reading": "き"}, {"kind": "fixed", "char": "則", "reading": "そく"}]}, {"qRuby": "<ruby>通<rt>つう</rt></ruby><ruby>行<rt>こう</rt></ruby>”きん”<ruby>止<rt>し</rt></ruby>", "answerFull": "通行禁止", "units": [{"kind": "blank", "expected": "禁", "reading": "きん"}, {"kind": "fixed", "char": "止", "reading": "し"}]}, {"qRuby": "<ruby>人<rt>じん</rt></ruby><ruby>口<rt>こう</rt></ruby>が”ふえる”", "answerFull": "人口が増える", "units": [{"kind": "blank", "expected": "増", "reading": "ふ"}, {"kind": "blank", "expected": "え", "reading": "え"}, {"kind": "blank", "expected": "る", "reading": "る"}]}, {"qRuby": "”あまり”を<ruby>求<rt>もと</rt></ruby>める", "answerFull": "余りを求める", "units": [{"kind": "blank", "expected": "余", "reading": "あま"}, {"kind": "blank", "expected": "り", "reading": "り"}]}, {"qRuby": "<ruby>健<rt>けん</rt></ruby><ruby>康<rt>こう</rt></ruby>を”たもつ”", "answerFull": "健康を保つ", "units": [{"kind": "blank", "expected": "保", "reading": "たも"}, {"kind": "blank", "expected": "つ", "reading": "つ"}]}, {"qRuby": "<ruby>道<rt>みち</rt></ruby>に”まよう”", "answerFull": "道に迷う", "units": [{"kind": "blank", "expected": "迷", "reading": "まよ"}, {"kind": "blank", "expected": "う", "reading": "う"}]}, {"qRuby": "<ruby>手<rt>て</rt></ruby>で”ささえる”", "answerFull": "手で支える", "units": [{"kind": "blank", "expected": "支", "reading": "ささ"}, {"kind": "blank", "expected": "え", "reading": "え"}, {"kind": "blank", "expected": "る", "reading": "る"}]}, {"qRuby": "”ふたたび”<ruby>現<rt>あらわ</rt></ruby>れる", "answerFull": "再び現れる", "units": [{"kind": "blank", "expected": "再", "reading": "ふたた"}, {"kind": "blank", "expected": "び", "reading": "び"}]}, {"qRuby": "<ruby>左<rt>さ</rt></ruby><ruby>右<rt>ゆう</rt></ruby>を”くらべる”", "answerFull": "左右を比べる", "units": [{"kind": "blank", "expected": "比", "reading": "くら"}, {"kind": "blank", "expected": "べ", "reading": "べ"}, {"kind": "blank", "expected": "る", "reading": "る"}]}, {"qRuby": "<ruby>例<rt>れい</rt></ruby>を”しめす”", "answerFull": "例を示す", "units": [{"kind": "blank", "expected": "示", "reading": "しめ"}, {"kind": "blank", "expected": "す", "reading": "す"}]}, {"qRuby": "”ゆたかな”<ruby>生<rt>せい</rt></ruby><ruby>活<rt>かつ</rt></ruby>", "answerFull": "豊かな生活", "units": [{"kind": "blank", "expected": "豊", "reading": "ゆたか"}, {"kind": "blank", "expected": "か", "reading": "か"}, {"kind": "blank", "expected": "な", "reading": "な"}]}, {"qRuby": "”ひとり”<ruby>言<rt>ごと</rt></ruby>を<ruby>言<rt>い</rt></ruby>う", "answerFull": "独り言を言う", "units": [{"kind": "blank", "expected": "独", "reading": "ひと"}, {"kind": "blank", "expected": "り", "reading": "り"}, {"kind": "fixed", "char": "言", "reading": "ごと"}]}];
 
-let items = loadItems();
-let idx = loadIdx();
+let items = loadItems();     // editable
+let mode = loadMode();
+let idxPractice = loadIdx("practice");
+let idxTest = loadIdx("test");
+let idx = (mode === "test") ? idxTest : idxPractice;
 
 let traceMode = false;
-let moreOpen = false;
+let revealAnswer = false;
 const BOX_BASE_SCALE = 240; // 240% is treated as 0%
 let boxScaleOffset = loadBoxScaleOffset();
+let testRun = loadTestRun() || newTestRun();
 
 let strokesByBlank = [];
 let activeBlank = 0;
@@ -50,6 +36,7 @@ const ctx = canvas.getContext("2d");
 const qidEl = document.getElementById("qid");
 const qtotalEl = document.getElementById("qtotal");
 const promptEl = document.getElementById("promptText");
+const answerEl = document.getElementById("answerText");
 
 const prevBtn = document.getElementById("prevBtn");
 const nextBtn = document.getElementById("nextBtn");
@@ -58,11 +45,25 @@ const randomBtn = document.getElementById("randomBtn");
 const toggleTraceBtn = document.getElementById("toggleTraceBtn");
 const boxScaleSlider = document.getElementById("boxScaleSlider");
 const boxScaleLabel = document.getElementById("boxScaleLabel");
+const showAnswerBtn = document.getElementById("showAnswerBtn");
 const resetBtn = document.getElementById("resetBtn");
 const editBtn = document.getElementById("editBtn");
 
+const practiceModeBtn = document.getElementById("practiceModeBtn");
+const testModeBtn = document.getElementById("testModeBtn");
+const modeLabel = document.getElementById("modeLabel");
+const testProgress = document.getElementById("testProgress");
 
+const startTestBtn = document.getElementById("startTestBtn");
+const markCorrectBtn = document.getElementById("markCorrectBtn");
+const markWrongBtn = document.getElementById("markWrongBtn");
+const showResultBtn = document.getElementById("showResultBtn");
+const historyBtn = document.getElementById("historyBtn");
 
+const exportBtn = document.getElementById("exportBtn");
+const importInput = document.getElementById("importInput");
+
+let resultDialog, historyDialog;
 let boxes = [];
 
 // --- editor elements ---
@@ -84,20 +85,12 @@ const applyJsonBtn = document.getElementById("applyJsonBtn");
 let editIndex = 0;
 
 // ---------- canvas sizing ----------
-function updateLayoutVars(){
-  const topbar = document.querySelector('.topbar');
-  const h = topbar ? topbar.offsetHeight : 280;
-  document.documentElement.style.setProperty('--topbar-h', `${h}px`);
-}
-
 function resizeCanvas() {
-  updateLayoutVars();
   const dpr = window.devicePixelRatio || 1;
   const rect = canvas.getBoundingClientRect();
   canvas.width = Math.floor(rect.width * dpr);
   canvas.height = Math.floor(rect.height * dpr);
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  updateLayoutVars();
   redraw();
 }
 window.addEventListener("resize", resizeCanvas);
@@ -347,15 +340,20 @@ if (boxScaleSlider) {
 
 // ---------- reset ----------
 resetBtn.onclick = async () => {
-  if (!confirm("このアプリの保存データを初期化します（手書き・編集した問題など）。よろしいですか？")) return;
+  if (!confirm("このアプリの保存データを初期化します（手書き・履歴・編集した問題など）。よろしいですか？")) return;
+
+  const prefixes = [LS_KEYS.strokesPrefixPractice, LS_KEYS.strokesPrefixTest];
+
+  Object.values(LS_KEYS).forEach(k => { try { localStorage.removeItem(k); } catch {} });
 
   try {
-    // remove known keys
-    Object.values(LS_KEYS).forEach(k => { try { lsRemove(k); } catch {} });
-
-    // remove all stroke keys
-    const ks = lsKeys().filter(k => k.startsWith(LS_KEYS.strokesPrefix));
-    ks.forEach(k => lsRemove(k));
+    const ks = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (!k) continue;
+      if (prefixes.some(p => k.startsWith(p))) ks.push(k);
+    }
+    ks.forEach(k => localStorage.removeItem(k));
   } catch {}
 
   try {
@@ -369,20 +367,84 @@ resetBtn.onclick = async () => {
   location.reload();
 };
 
+// ---------- answer reveal (hold) ----------
+function setRevealAnswer(v) { revealAnswer = v; renderQuestion(); }
+["pointerdown","mousedown","touchstart"].forEach(ev => {
+  showAnswerBtn.addEventListener(ev, (e) => { e.preventDefault(); setRevealAnswer(true); }, { passive:false });
+});
+["pointerup","pointercancel","pointerleave","mouseup","touchend","touchcancel"].forEach(ev => {
+  showAnswerBtn.addEventListener(ev, (e) => { e.preventDefault(); setRevealAnswer(false); }, { passive:false });
+});
+
+// ---------- mode ----------
+practiceModeBtn.onclick = () => switchMode("practice");
+testModeBtn.onclick = () => switchMode("test");
+
+const startTestBtnSafe = startTestBtn;
+startTestBtnSafe.onclick = () => {
+  if (!confirm("テストを開始/リセットします。前回の途中結果は上書きされます。")) return;
+  testRun = newTestRun(); saveTestRun();
+  idxTest = 0; saveIdx("test", idxTest);
+  goTo(0); updateTestUI();
+};
+markCorrectBtn.onclick = () => markResult(true);
+markWrongBtn.onclick = () => markResult(false);
+showResultBtn.onclick = () => openResultDialog();
+historyBtn.onclick = () => openHistoryDialog();
+
+// ---------- backup strokes ----------
+exportBtn.onclick = () => {
+  const payload = { version: APP_DATA_VERSION, items, idxPractice, strokesPractice: exportAllPracticeStrokes(), exportedAt: new Date().toISOString() };
+  downloadJson(payload, `kanji_v${APP_DATA_VERSION}_backup_${new Date().toISOString().slice(0,10)}.json`);
+};
+
+importInput.onchange = async (e) => {
+  const file = e.target.files?.[0];
+  if (!file) return;
+  try {
+    const data = JSON.parse(await file.text());
+    if (!data.items || !Array.isArray(data.items)) throw new Error("itemsがありません");
+    items = sanitizeItems(data.items); saveItems();
+    if (data.strokesPractice && typeof data.strokesPractice === "object") importAllPracticeStrokes(data.strokesPractice);
+    idxPractice = Math.min(Number(data.idxPractice ?? 0) || 0, items.length - 1);
+    saveIdx("practice", idxPractice);
+    testRun = newTestRun(); saveTestRun();
+    alert("バックアップを読み込みました。");
+    goTo(idxPractice);
+  } catch (err) {
+    alert("読み込みに失敗しました: " + err.message);
+  } finally {
+    importInput.value = "";
+  }
+};
+
 // ---------- render ----------
 function renderQuestion() {
   const item = items[idx] || { qRuby:"", answerFull:"", units:[] };
   qidEl.textContent = String(idx + 1);
   qtotalEl.textContent = String(items.length);
   promptEl.innerHTML = item.qRuby || "";
+  answerEl.textContent = revealAnswer ? (item.answerFull || "") : "（非表示）";
 }
 
-
-
-
+function updateModeUI() {
+  practiceModeBtn.classList.toggle("active", mode === "practice");
+  testModeBtn.classList.toggle("active", mode === "test");
+  modeLabel.textContent = (mode === "practice") ? "練習モード" : "テストモード";
+  document.querySelectorAll("[data-practice-only]").forEach(el => el.classList.toggle("hidden", mode !== "practice"));
+  document.querySelectorAll("[data-test-only]").forEach(el => el.classList.toggle("hidden", mode !== "test"));
+  updateTestUI();
+}
+function updateTestUI() {
+  if (mode !== "test") { testProgress.textContent = ""; return; }
+  const answered = testRun.results.filter(v => v !== null).length;
+  testProgress.textContent = `（${answered}/${items.length} 回答）`;
+}
 
 function renderAll() {
+  revealAnswer = false;
   renderQuestion();
+  updateModeUI();
   updateBoxScaleUI();
   loadStrokesForCurrent();
   redraw();
@@ -392,15 +454,130 @@ function goTo(newIdx) {
   if (newIdx < 0) newIdx = items.length - 1;
   if (newIdx >= items.length) newIdx = 0;
   idx = newIdx;
-  saveIdx(idx);
+  if (mode === "practice") { idxPractice = idx; saveIdx("practice", idxPractice); }
+  else { idxTest = idx; saveIdx("test", idxTest); }
+  revealAnswer = false;
   loadStrokesForCurrent();
   renderAll();
 }
 
+function switchMode(next) {
+  mode = next; saveMode(mode);
+  idx = (mode === "test") ? idxTest : idxPractice;
+  revealAnswer = false;
+  loadStrokesForCurrent();
+  renderAll();
+}
+
+// ---------- test ----------
+function newTestRun() {
+  return { id: String(Date.now()), startedAt: new Date().toISOString(), finishedAt: null, results: Array(items.length).fill(null) };
+}
+
+function markResult(isCorrect) {
+  if (mode !== "test") return;
+  testRun.results[idx] = isCorrect; saveTestRun(); updateTestUI();
+  const nextUnanswered = testRun.results.findIndex((v, i) => v === null && i > idx);
+  const wrapUnanswered = testRun.results.findIndex(v => v === null);
+  if (nextUnanswered !== -1) goTo(nextUnanswered);
+  else if (wrapUnanswered !== -1) goTo(wrapUnanswered);
+  else {
+    if (!testRun.finishedAt) { testRun.finishedAt = new Date().toISOString(); saveTestRun(); pushHistory(testRun); }
+    openResultDialog();
+  }
+}
+
+function calcScore(run) {
+  const total = run.results.length;
+  const correct = run.results.filter(v => v === true).length;
+  const wrong = run.results.filter(v => v === false).length;
+  const unanswered = run.results.filter(v => v === null).length;
+  return { total, correct, wrong, unanswered };
+}
+
+function ensureDialogs() {
+  if (resultDialog) return;
+
+  resultDialog = document.createElement("dialog");
+  resultDialog.innerHTML = `
+    <form method="dialog" style="width:min(760px,92vw);">
+      <h3>テスト結果</h3>
+      <div id="resSum" style="font-size:14px;margin:6px 0 10px;"></div>
+      <div id="resList" style="border:1px solid #e5e5e5;border-radius:10px;background:#fff;padding:10px;max-height:45vh;overflow:auto;font-size:13px;line-height:1.6;"></div>
+      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:10px;">
+        <button class="btn primary" value="ok">閉じる</button>
+      </div>
+    </form>`;
+  document.body.appendChild(resultDialog);
+
+  historyDialog = document.createElement("dialog");
+  historyDialog.innerHTML = `
+    <form method="dialog" style="width:min(760px,92vw);">
+      <h3>履歴（直近10回）</h3>
+      <div id="hisList" style="border:1px solid #e5e5e5;border-radius:10px;background:#fff;padding:10px;max-height:45vh;overflow:auto;font-size:13px;line-height:1.6;"></div>
+      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:10px;">
+        <button class="btn primary" value="ok">閉じる</button>
+      </div>
+    </form>`;
+  document.body.appendChild(historyDialog);
+}
+
+function openResultDialog() {
+  ensureDialogs();
+  const run = testRun;
+  const { total, correct, wrong, unanswered } = calcScore(run);
+  const started = run.startedAt ? new Date(run.startedAt) : null;
+  const finished = run.finishedAt ? new Date(run.finishedAt) : null;
+
+  resultDialog.querySelector("#resSum").innerHTML =
+    `<div>スコア：<b>${correct}/${total}</b>（○=${correct} / ×=${wrong} / 未回答=${unanswered}）</div>` +
+    `<div style="color:#666;font-size:12px;">開始：${started ? started.toLocaleString() : "-"}` +
+    `　完了：${finished ? finished.toLocaleString() : (unanswered === 0 ? "-" : "（未完了）")}</div>`;
+
+  const lines = [];
+  run.results.forEach((v, i) => {
+    if (v === true) return;
+    const badge = (v === false) ? "×" : "未";
+    const it = items[i];
+    lines.push(`<div style="padding:6px 0;border-bottom:1px dashed #eee;">
+      <b>[${badge}] 問題${i + 1}</b>：${it.qRuby}<br/>
+      正解：<b>${escapeHtml(it.answerFull)}</b>
+    </div>`);
+  });
+
+  resultDialog.querySelector("#resList").innerHTML =
+    lines.length ? lines.join("") : `<div style="padding:6px 0;">全問正解！</div>`;
+
+  resultDialog.showModal();
+}
+
+function pushHistory(run) {
+  const history = loadHistory();
+  history.unshift({ id: run.id, startedAt: run.startedAt, finishedAt: run.finishedAt, results: run.results });
+  while (history.length > 10) history.pop();
+  localStorage.setItem(LS_KEYS.testHistory, JSON.stringify(history));
+}
+
+function openHistoryDialog() {
+  ensureDialogs();
+  const history = loadHistory();
+  const el = historyDialog.querySelector("#hisList");
+  if (history.length === 0) { el.innerHTML = `<div>履歴はまだありません。</div>`; historyDialog.showModal(); return; }
+  el.innerHTML = history.map(h => {
+    const { total, correct, wrong, unanswered } = calcScore(h);
+    const started = h.startedAt ? new Date(h.startedAt).toLocaleString() : "-";
+    const finished = h.finishedAt ? new Date(h.finishedAt).toLocaleString() : "-";
+    return `<div style="padding:6px 0;border-bottom:1px dashed #eee;">
+      <b>${correct}/${total}</b>（×=${wrong} / 未=${unanswered}）<br/>
+      <span style="color:#666;font-size:12px;">開始：${escapeHtml(started)}　完了：${escapeHtml(finished)}</span>
+    </div>`;
+  }).join("");
+  historyDialog.showModal();
+}
 
 // ---------- storage ----------
-function getDataVersion() { return lsGet(LS_KEYS.dataVersion) || ""; }
-function saveDataVersion(v) { lsSet(LS_KEYS.dataVersion, v); }
+function getDataVersion() { return localStorage.getItem(LS_KEYS.dataVersion) || ""; }
+function saveDataVersion(v) { localStorage.setItem(LS_KEYS.dataVersion, v); }
 
 function sanitizeItems(arr) {
   const out = [];
@@ -483,46 +660,45 @@ function applyKnownFixes(arr){
 
 
 function saveItems(){
-  lsSet(LS_KEYS.items, JSON.stringify(items));
+  localStorage.setItem(LS_KEYS.items, JSON.stringify(items));
   saveDataVersion(APP_DATA_VERSION);
 }
 
 function loadItems(){
-  const s = lsGet(LS_KEYS.items);
+  const s = localStorage.getItem(LS_KEYS.items);
   if (!s) {
     saveDataVersion(APP_DATA_VERSION);
-    lsSet(LS_KEYS.items, JSON.stringify(defaultItems));
+    localStorage.setItem(LS_KEYS.items, JSON.stringify(defaultItems));
     return defaultItems;
   }
   try {
     const arr = JSON.parse(s);
     const clean = sanitizeItems(arr);
     // 旧バージョンでも編集内容は残したいので、バージョン不一致でも上書きしない。
-    lsSet(LS_KEYS.items, JSON.stringify(clean));
+    localStorage.setItem(LS_KEYS.items, JSON.stringify(clean));
     saveDataVersion(APP_DATA_VERSION);
     return clean;
   } catch {
-    lsSet(LS_KEYS.items, JSON.stringify(defaultItems));
+    localStorage.setItem(LS_KEYS.items, JSON.stringify(defaultItems));
     saveDataVersion(APP_DATA_VERSION);
     return defaultItems;
   }
 }
 
+function saveMode(m){ localStorage.setItem(LS_KEYS.mode, m); }
+function loadMode(){ const m = localStorage.getItem(LS_KEYS.mode); return (m==="test"||m==="practice")?m:"practice"; }
+function saveIdx(which,v){ localStorage.setItem(which==="test"?LS_KEYS.idxTest:LS_KEYS.idxPractice, String(v)); }
+function loadIdx(which){ const s=localStorage.getItem(which==="test"?LS_KEYS.idxTest:LS_KEYS.idxPractice); const n=Number(s); return Number.isFinite(n)&&n>=0?n:0; }
 
-function saveIdx(v){ lsSet(LS_KEYS.idx, String(v)); }
-function loadIdx(){ const s = lsGet(LS_KEYS.idx); const n = Number(s); return Number.isFinite(n)&&n>=0?n:0; }
-
-function strokesKey(qIndex, blankIndex){
-  return `${LS_KEYS.strokesPrefix}${qIndex}_${blankIndex}`;
+function strokesKey(whichMode,qIndex,blankIndex){
+  const prefix = (whichMode==="test")?LS_KEYS.strokesPrefixTest:LS_KEYS.strokesPrefixPractice;
+  return `${prefix}${qIndex}_${blankIndex}`;
 }
-
-
-
 function loadStrokesForCurrent(){
   buildBoxes();
   const blanks = boxes.filter(b=>b.isBlank).length;
   strokesByBlank = Array.from({length:blanks},(_,bi)=>{
-    const s = lsGet(strokesKey(idx,bi));
+    const s = localStorage.getItem(strokesKey(mode,idx,bi));
     if(!s) return [];
     try{ return JSON.parse(s)||[]; }catch{ return []; }
   });
@@ -532,7 +708,7 @@ function saveStrokesForCurrent(){
   buildBoxes();
   const blanks = boxes.filter(b=>b.isBlank).length;
   for(let bi=0; bi<blanks; bi++){
-    lsSet(strokesKey(idx,bi), JSON.stringify(strokesByBlank[bi]||[]));
+    localStorage.setItem(strokesKey(mode,idx,bi), JSON.stringify(strokesByBlank[bi]||[]));
   }
 }
 function exportAllPracticeStrokes(){
@@ -540,8 +716,8 @@ function exportAllPracticeStrokes(){
   for(let qi=0; qi<items.length; qi++){
     const blanks = (items[qi]?.units||[]).filter(u=>u.kind==="blank").length;
     for(let bi=0; bi<blanks; bi++){
-      const k = strokesKey(qi,bi);
-      const v = lsGet(k);
+      const k = strokesKey("practice",qi,bi);
+      const v = localStorage.getItem(k);
       if(v) obj[`${qi}_${bi}`] = v;
     }
   }
@@ -550,8 +726,37 @@ function exportAllPracticeStrokes(){
 function importAllPracticeStrokes(strokesObj){
   for(const [k,v] of Object.entries(strokesObj)){
     if(typeof v !== "string") continue;
+    localStorage.setItem(LS_KEYS.strokesPrefixPractice + k, v);
   }
 }
+function loadTestRun(){
+  const s = localStorage.getItem(LS_KEYS.testRun);
+  if(!s) return null;
+  try{
+    const r = JSON.parse(s);
+    if(!r || !Array.isArray(r.results) || r.results.length !== items.length) return null;
+    return {
+      id: String(r.id ?? Date.now()),
+      startedAt: String(r.startedAt ?? new Date().toISOString()),
+      finishedAt: r.finishedAt ? String(r.finishedAt) : null,
+      results: r.results.map(v => (v===true?true:(v===false?false:null)))
+    };
+  }catch{ return null; }
+}
+function saveTestRun(){ localStorage.setItem(LS_KEYS.testRun, JSON.stringify(testRun)); }
+function loadHistory(){
+  const s = localStorage.getItem(LS_KEYS.testHistory);
+  if(!s) return [];
+  try{
+    const arr = JSON.parse(s);
+    if(!Array.isArray(arr)) return [];
+    return arr.map(h=>({
+      id: String(h.id ?? ""),
+      startedAt: String(h.startedAt ?? ""),
+      finishedAt: h.finishedAt ? String(h.finishedAt) : null,
+      results: Array.isArray(h.results) ? h.results.map(v => (v===true?true:(v===false?false:null))) : Array(items.length).fill(null)
+    })).filter(h => h.results.length === items.length);
+  }catch{ return []; }
 }
 function downloadJson(obj,filename){
   const blob = new Blob([JSON.stringify(obj,null,2)], {type:"application/json"});
@@ -567,22 +772,22 @@ function escapeHtml(s){
 }
 
 function loadBoxScaleOffset(){
-  const s = lsGet(LS_KEYS.boxScaleOffset);
+  const s = localStorage.getItem(LS_KEYS.boxScaleOffset);
   const n = Number(s);
   // offset range so that actual scale stays within [70..400]
   if (Number.isFinite(n) && n >= -170 && n <= 160) return n;
 
   // migration from old absolute scale (kanji_box_scale_v3)
-  const oldAbs = Number(lsGet("kanji_box_scale_v3"));
+  const oldAbs = Number(localStorage.getItem("kanji_box_scale_v3"));
   if (Number.isFinite(oldAbs)) {
     const off = Math.max(-170, Math.min(160, oldAbs - BOX_BASE_SCALE));
-    lsSet(LS_KEYS.boxScaleOffset, String(off));
+    localStorage.setItem(LS_KEYS.boxScaleOffset, String(off));
     return off;
   }
   return 0; // default = 0% (means 240% actual)
 }
 function saveBoxScaleOffset(){
-  lsSet(LS_KEYS.boxScaleOffset, String(boxScaleOffset));
+  localStorage.setItem(LS_KEYS.boxScaleOffset, String(boxScaleOffset));
 }
 function formatOffset(n){
   const sign = n > 0 ? "+" : "";
@@ -602,6 +807,7 @@ function changeBoxScale(delta){
 
 // ---------- editor ----------
 function openEditor() {
+  if (mode !== "practice") return;
   editIndex = idx;
   syncEditorFromItems();
   editDialog.showModal();
@@ -727,12 +933,12 @@ saveEditBtn.onclick = () => {
   renderAll();
 };
 
-if (exportItemsBtn) exportItemsBtn.onclick = () => {
-const payload = { version: APP_DATA_VERSION, items, exportedAt: new Date().toISOString() };
+exportItemsBtn.onclick = () => {
+  const payload = { version: APP_DATA_VERSION, items, exportedAt: new Date().toISOString() };
   downloadJson(payload, `kanji_items_${new Date().toISOString().slice(0,10)}.json`);
 };
 
-if (importItemsInput) importItemsInput.onchange = async (e) => {
+importItemsInput.onchange = async (e) => {
   const file = e.target.files?.[0];
   if (!file) return;
   try{
@@ -745,12 +951,13 @@ if (importItemsInput) importItemsInput.onchange = async (e) => {
       // We'll accept anyway; questions count becomes that length.
     }
     saveItems();
+    testRun = newTestRun(); saveTestRun();
     alert("問題データを読み込みました。");
     // refresh editor and main
     idx = Math.min(idx, items.length-1);
-    idx = Math.min(idx, items.length-1);
-    idx = Math.min(idx, items.length-1);
-    saveIdx(idx); saveIdx(idx);
+    idxPractice = Math.min(idxPractice, items.length-1);
+    idxTest = Math.min(idxTest, items.length-1);
+    saveIdx("practice", idxPractice); saveIdx("test", idxTest);
     syncEditorFromItems();
     renderAll();
   }catch(err){
@@ -764,8 +971,9 @@ restoreDefaultBtn.onclick = () => {
   if (!confirm("初期の50問に戻します。編集した内容は上書きされます。よろしいですか？")) return;
   items = JSON.parse(JSON.stringify(defaultItems));
   saveItems();
-  idx = 0; idx = 0; idx = 0;
-  saveIdx(0); saveIdx(0);
+  testRun = newTestRun(); saveTestRun();
+  idx = 0; idxPractice = 0; idxTest = 0;
+  saveIdx("practice",0); saveIdx("test",0);
   syncEditorFromItems();
   renderAll();
 };
@@ -777,6 +985,7 @@ applyJsonBtn.onclick = () => {
     const clean = sanitizeItems(arr);
     items = clean;
     saveItems();
+    testRun = newTestRun(); saveTestRun();
     alert("JSONを反映しました。");
     editIndex = Math.min(editIndex, items.length-1);
     syncEditorFromItems();
@@ -788,15 +997,19 @@ applyJsonBtn.onclick = () => {
 
 if (editBtn) editBtn.onclick = openEditor;
 
-
 // ---------- init ----------
 function init(){
-  document.body.classList.add("compact");
   items = sanitizeItems(items);
   items = applyKnownFixes(items);
   saveItems();
 
-  if (idx >= items.length) { idx = 0; saveIdx(idx); }
+  if(idxPractice >= items.length) idxPractice = 0;
+  if(idxTest >= items.length) idxTest = 0;
+  saveIdx("practice", idxPractice); saveIdx("test", idxTest);
+
+  if(!testRun || testRun.results.length !== items.length){ testRun = newTestRun(); saveTestRun(); }
+
+  idx = (mode==="test") ? idxTest : idxPractice;
 
   renderAll();
   updateBoxScaleUI();
@@ -804,4 +1017,4 @@ function init(){
 
   if("serviceWorker" in navigator){ navigator.serviceWorker.register("./sw.js").catch(()=>{}); }
 }
-try{ init(); }catch(e){ console.error(e); try{ const el=document.getElementById('promptText'); if(el) el.textContent='エラー: ' + (e && e.message ? e.message : e); }catch{} }
+init();
