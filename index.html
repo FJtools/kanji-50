@@ -13,67 +13,35 @@
     <div class="title">漢字 手書き練習</div>
 
     <div class="row">
-      <div class="seg" role="tablist" aria-label="mode">
-        <button id="practiceModeBtn" class="segbtn">練習</button>
-        <button id="testModeBtn" class="segbtn">テスト</button>
-      </div>
-
-      <div class="status">
-        <span id="modeLabel"></span>
-        <span class="muted" id="testProgress"></span>
-      </div>
-    </div>
-
-    <div class="row">
       <button id="prevBtn" class="btn">◀ 前</button>
+
       <div class="qbox">
-        <div class="qid"><span id="qid"></span>/ <span id="qtotal"></span></div>
-        <div class="prompt">
-          <span class="label">問題：</span><span id="promptText"></span>
-        </div>
-        <div class="answerline">
-          <span class="label">正解：</span><span id="answerText"></span>
-        </div>
+        <div id="promptText" class="prompt"></div>
+        <div class="meta"><span id="qid"></span> / <span id="qtotal"></span></div>
       </div>
+
       <button id="nextBtn" class="btn">次 ▶</button>
     </div>
 
-    <div class="row controls">
-      <button id="showAnswerBtn" class="btn primary">正解を見る（押している間）</button>
-      <button id="toggleTraceBtn" class="btn">なぞり（薄表示）</button>
-      
-      <button id="boxSmallerBtn" class="btn" title="回答欄を小さく">－ 枠</button>
-      <button id="boxLargerBtn" class="btn" title="回答欄を大きく">＋ 枠</button>
-      <span class="muted" id="boxScaleLabel">枠：--%</span>
-<button id="clearBtn" class="btn danger">消す</button>
-      <button id="randomBtn" class="btn" data-practice-only>ランダム</button>
-      <button id="editBtn" class="btn" data-practice-only title="問題データを編集します">問題編集</button>
+    <div class="row">
+      <button id="toggleTraceBtn" class="btn">正解（薄表示）</button>
+
+      <div class="scaleCtl" title="回答欄の大きさ">
+        <span class="muted">枠</span>
+        <input id="boxScaleSlider" type="range" min="-170" max="160" step="10" value="0" />
+        <span class="muted" id="boxScaleLabel">0%</span>
+      </div>
+
+      <button id="clearBtn" class="btn danger">消す</button>
+      <button id="randomBtn" class="btn">ランダム</button>
+      <button id="editBtn" class="btn" title="問題データを編集します">問題編集</button>
       <button id="resetBtn" class="btn" title="表示がおかしい時の初期化">初期化</button>
-    </div>
-
-    <div class="row controls" data-test-only>
-      <button id="startTestBtn" class="btn">テスト開始 / リセット</button>
-      <button id="markCorrectBtn" class="btn primary">○ 正解</button>
-      <button id="markWrongBtn" class="btn danger">× 不正解</button>
-      <button id="showResultBtn" class="btn">結果</button>
-      <button id="historyBtn" class="btn">履歴</button>
-    </div>
-
-    <div class="row controls" data-practice-only>
-      <button id="exportBtn" class="btn">バックアップ書き出し</button>
-      <label class="btn filebtn">
-        バックアップ読込
-        <input id="importInput" type="file" accept="application/json" hidden />
-      </label>
     </div>
   </header>
 
   <main class="main">
     <canvas id="pad"></canvas>
-    <div class="hint">
-      ※問題文は全漢字にふりがな。<b>回答欄（1〜40）は漢字にもふりがな</b>、<b>41〜50は送り仮名（ひらがな）も空欄</b>です。<br/>
-      編集した問題はこの端末に保存されます（GitHubのファイルは変わりません）。別端末に移す場合は「問題データ書き出し/読込」を使ってください。
-    </div>
+    <div class="hint muted">iPadでは指やApple Pencilで書けます。</div>
   </main>
 
   <dialog id="editDialog">
