@@ -6,7 +6,6 @@
   --btn-border:#d0d0d0;
   --danger:#ffeded;
 }
-
 *{ box-sizing:border-box; }
 body{
   margin:0;
@@ -14,7 +13,6 @@ body{
   color:#111;
   background:#fafafa;
 }
-
 .topbar{
   position: sticky;
   top: 0;
@@ -24,149 +22,36 @@ body{
   backdrop-filter: blur(10px);
   border-bottom: 1px solid #e5e5e5;
 }
-
-.title{
-  font-weight: 700;
-  font-size: 16px;
-  margin-bottom: 8px;
-}
-
-.row{
-  display:flex;
-  gap:8px;
-  align-items: center;
-  margin-bottom: 8px;
-  flex-wrap: wrap;
-}
-
-.qbox{
-  flex:1;
-  min-width: 0;
-  padding: 8px 10px;
-  border:1px solid #e5e5e5;
-  border-radius: 10px;
-  background:#fff;
-}
-
+.title{ font-weight: 700; font-size: 16px; margin-bottom: 8px; }
+.row{ display:flex; gap:8px; align-items: center; margin-bottom: 8px; flex-wrap: wrap; }
+.qbox{ flex:1; min-width: 0; padding: 8px 10px; border:1px solid #e5e5e5; border-radius: 10px; background:#fff; }
 .qid{ font-size: 12px; color: var(--muted); margin-bottom: 2px; }
 .prompt{ font-size: 18px; font-weight: 700; }
 .answerline{ font-size: 14px; color: var(--muted); margin-top: 2px; }
 .label{ color: var(--muted); font-weight: 600; }
-
 .btn{
-  appearance:none;
-  border:1px solid var(--btn-border);
-  background: var(--btn);
-  padding: 10px 12px;
-  border-radius: 10px;
-  font-size: 14px;
-  cursor: pointer;
-  user-select:none;
+  appearance:none; border:1px solid var(--btn-border); background: var(--btn);
+  padding: 10px 12px; border-radius: 10px; font-size: 14px;
+  cursor: pointer; user-select:none;
 }
-
 .btn:active{ transform: translateY(1px); }
 .btn.primary{ background:#eaf2ff; border-color:#c8dcff; }
 .btn.danger{ background: var(--danger); border-color:#ffc9c9; }
-
 .filebtn{ display:inline-flex; align-items:center; gap:6px; }
-
-.main{
-  padding: 10px;
-}
-
+.main{ padding: 10px; }
 #pad{
   width: 100%;
-  height: calc(100vh - 290px);
+  height: calc(100vh - 270px);
   background: var(--pad-bg);
   border: 1px solid #e0e0e0;
   border-radius: 14px;
   touch-action: none;
 }
-
-.hint{
-  margin-top: 8px;
-  font-size: 12px;
-  color: var(--muted);
-}
-
+.hint{ margin-top: 8px; font-size: 12px; color: var(--muted); line-height: 1.6; }
 .muted{ color: var(--muted); }
-
-.seg{
-  display:inline-flex;
-  border:1px solid #e0e0e0;
-  border-radius: 12px;
-  overflow:hidden;
-  background:#fff;
-}
-.segbtn{
-  border:0;
-  padding: 8px 12px;
-  background: transparent;
-  cursor: pointer;
-  font-size: 14px;
-}
-.segbtn.active{
-  background:#111;
-  color:#fff;
-}
-
-.status{
-  display:flex;
-  gap:10px;
-  align-items:center;
-  font-size: 13px;
-}
-
+.seg{ display:inline-flex; border:1px solid #e0e0e0; border-radius: 12px; overflow:hidden; background:#fff; }
+.segbtn{ border:0; padding: 8px 12px; background: transparent; cursor: pointer; font-size: 14px; }
+.segbtn.active{ background:#111; color:#fff; }
+.status{ display:flex; gap:10px; align-items:center; font-size: 13px; }
 .hidden{ display:none !important; }
-
-dialog::backdrop{ background: rgba(0,0,0,.3); }
-.dialog{
-  width: min(760px, 92vw);
-}
-.small{ font-size: 12px; color: var(--muted); }
-
-textarea{
-  width: 100%;
-  padding: 10px;
-  border-radius: 10px;
-  border:1px solid #ddd;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Noto Sans Mono", monospace;
-  font-size: 13px;
-  margin: 8px 0 10px;
-}
-
-.dialogRow{
-  display:flex;
-  gap:10px;
-  justify-content: flex-end;
-}
-
-.resultSummary{
-  font-size: 14px;
-  margin: 6px 0 10px;
-}
-.resultList{
-  border:1px solid #e5e5e5;
-  border-radius: 10px;
-  background:#fff;
-  padding: 10px;
-  max-height: 45vh;
-  overflow:auto;
-  font-size: 13px;
-  line-height: 1.6;
-}
-.resultItem{
-  padding: 6px 0;
-  border-bottom: 1px dashed #eee;
-}
-.resultItem:last-child{ border-bottom: 0; }
-.badge{
-  display:inline-block;
-  padding: 2px 8px;
-  border-radius: 999px;
-  border: 1px solid #ddd;
-  font-size: 12px;
-  margin-right: 8px;
-}
-.badge.ok{ background:#eaf2ff; border-color:#c8dcff; }
-.badge.ng{ background:#ffeded; border-color:#ffc9c9; }
+ruby rt{ font-size: 0.55em; color: #666; }
