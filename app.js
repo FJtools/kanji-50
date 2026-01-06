@@ -1,5 +1,5 @@
 /* v3.5 - 編集機能つき（問題データ編集/書き出し/読込） */
-const APP_DATA_VERSION = "3.9";
+const APP_DATA_VERSION = "3.10";
 
 const LS_KEYS = {
   dataVersion: "kanji_data_version",
@@ -43,8 +43,7 @@ const nextBtn = document.getElementById("nextBtn");
 const clearBtn = document.getElementById("clearBtn");
 const randomBtn = document.getElementById("randomBtn");
 const toggleTraceBtn = document.getElementById("toggleTraceBtn");
-const boxSmallerBtn = document.getElementById("boxSmallerBtn");
-const boxLargerBtn = document.getElementById("boxLargerBtn");
+const boxScaleSlider = document.getElementById("boxScaleSlider");
 const boxScaleLabel = document.getElementById("boxScaleLabel");
 const showAnswerBtn = document.getElementById("showAnswerBtn");
 const resetBtn = document.getElementById("resetBtn");
@@ -328,8 +327,16 @@ clearBtn.onclick = () => {
 };
 
 toggleTraceBtn.onclick = () => { traceMode = !traceMode; redraw(); };
-if (boxSmallerBtn) boxSmallerBtn.onclick = () => changeBoxScale(-10);
-if (boxLargerBtn) boxLargerBtn.onclick = () => changeBoxScale(+10);
+if (boxScaleSlider) {
+  boxScaleSlider.addEventListener("input", () => {
+    const v = Number(boxScaleSlider.value);
+    if (!Number.isFinite(v)) return;
+    boxScaleOffset = v;
+    saveBoxScaleOffset();
+    updateBoxScaleUI();
+    redraw();
+  });
+}
 
 // ---------- reset ----------
 resetBtn.onclick = async () => {
@@ -787,7 +794,8 @@ function formatOffset(n){
   return `${sign}${n}%`;
 }
 function updateBoxScaleUI(){
-  if (boxScaleLabel) boxScaleLabel.textContent = `枠：${formatOffset(boxScaleOffset)}`;
+  if (boxScaleLabel) boxScaleLabel.textContent = `${formatOffset(boxScaleOffset)}`;
+  if (boxScaleSlider) boxScaleSlider.value = String(boxScaleOffset);
 }
 function changeBoxScale(delta){
   boxScaleOffset = Math.max(-170, Math.min(160, boxScaleOffset + delta));
