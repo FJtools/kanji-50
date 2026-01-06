@@ -11,26 +11,37 @@
 <body>
   <header class="topbar">
     <div class="title">漢字 手書き練習</div>
-<div class="row">
+
+    <div class="row">
       <button id="prevBtn" class="btn">◀ 前</button>
+
       <div class="qbox">
-        <div class="qid"><span id="qid"></span>/ <span id="qtotal"></span></div>
-        <div class="prompt">
-          <span class="label">問題：</span><span id="promptText"></span>
-        </div>
-</div>
+        <div id="promptText" class="prompt"></div>
+        <div class="meta"><span id="qid"></span> / <span id="qtotal"></span></div>
+      </div>
+
       <button id="nextBtn" class="btn">次 ▶</button>
     </div>
-<button id="clearBtn" class="btn danger">消す</button>
-</div>
-</header>
+
+    <div class="row">
+      <button id="toggleTraceBtn" class="btn">正解（薄表示）</button>
+
+      <div class="scaleCtl" title="回答欄の大きさ">
+        <span class="muted">枠</span>
+        <input id="boxScaleSlider" type="range" min="-170" max="160" step="10" value="0" />
+        <span class="muted" id="boxScaleLabel">0%</span>
+      </div>
+
+      <button id="clearBtn" class="btn danger">消す</button>
+      <button id="randomBtn" class="btn">ランダム</button>
+      <button id="editBtn" class="btn" title="問題データを編集します">問題編集</button>
+      <button id="resetBtn" class="btn" title="表示がおかしい時の初期化">初期化</button>
+    </div>
+  </header>
 
   <main class="main">
     <canvas id="pad"></canvas>
-    <div class="hint">
-      ※問題文は全漢字にふりがな。<b>回答欄（1〜40）は漢字にもふりがな</b>、<b>41〜50は送り仮名（ひらがな）も空欄</b>です。<br/>
-      編集した問題はこの端末に保存されます（GitHubのファイルは変わりません）。別端末に移す場合は「問題データ書き出し/読込」を使ってください。
-    </div>
+    <div class="hint muted">指で書けます。2本指でスクロールできます。</div>
   </main>
 
   <dialog id="editDialog">
@@ -91,4 +102,3 @@
   <script src="app.js"></script>
 </body>
 </html>
-id="toggleTraceBtn"id="boxScaleSlider"id="boxScaleLabel"id="randomBtn"id="editBtn"id="resetBtn"
