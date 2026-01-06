@@ -1,0 +1,9 @@
+{
+  "name": "漢字 手書き練習",
+  "short_name": "漢字練習",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": []
+}
