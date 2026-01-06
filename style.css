@@ -98,28 +98,7 @@ body.compact .qbox{ padding: 6px 8px; }
 body.compact .prompt{ font-size: 16px; }
 body.compact .answerline{ font-size: 12px; }
 
-body.minimal .topbar .row.controls,
-body.minimal .topbar .row.controls[data-test-only],
-body.minimal .topbar .row.controls[data-practice-only]{
-  display:none !important;
-}
-body.minimal .hint{ display:none; }
-body.minimal .topbar{ padding-bottom: 8px; }
 
-.fab{
-  position: fixed;
-  right: 14px;
-  bottom: 14px;
-  z-index: 999;
-  width: 46px;
-  height: 46px;
-  border-radius: 999px;
-  border: 1px solid #d0d0d0;
-  background: #fff;
-  box-shadow: 0 6px 18px rgba(0,0,0,.12);
-  font-size: 20px;
-  cursor: pointer;
-}
 
 
 /* Always-visible minimal buttons under question */
@@ -133,4 +112,3 @@ body.minimal .topbar{ padding-bottom: 8px; }
 #moreBtn{ background:#fff; }
 
 
-body.minimal .miniControls{ display:flex !important; }
