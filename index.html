@@ -54,6 +54,7 @@
     </div>
 
     <div class="row controls" data-practice-only>
+      <button id="editBtn" class="btn">問題編集</button>
       <button id="exportBtn" class="btn">バックアップ書き出し</button>
       <label class="btn filebtn">
         バックアップ読込
@@ -65,11 +66,49 @@
   <main class="main">
     <canvas id="pad"></canvas>
     <div class="hint">
-      ・問題文は <b>全漢字にふりがな</b> を付けています。<br/>
-      ・回答は <b>単語（2〜4マス）</b> で表示され、空欄マスに手書きします。<br/>
-      ・送り仮名（例：増える/比べる）も <b>漢字＋かな</b> で練習できます。
+      Apple Pencil / 指で書けます。<br/>
+      「正解を見る」は<b>押している間だけ</b>表示されます。テストは○/×で自己採点して1周します。
     </div>
   </main>
+
+  <!-- 問題編集 -->
+  <dialog id="editDialog">
+    <form method="dialog" class="dialog">
+      <h3>問題編集（1行=1問）</h3>
+      <p class="small">
+        形式： <b>問題,正解,漢字1字</b><br/>
+        例：一定の”ひょう”価,一定の評価,評
+      </p>
+      <textarea id="editArea" rows="16" spellcheck="false"></textarea>
+      <div class="dialogRow">
+        <button value="cancel" class="btn">キャンセル</button>
+        <button id="saveEditBtn" value="ok" class="btn primary">保存</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- 結果 -->
+  <dialog id="resultDialog">
+    <form method="dialog" class="dialog">
+      <h3>テスト結果</h3>
+      <div id="resultSummary" class="resultSummary"></div>
+      <div id="resultList" class="resultList"></div>
+      <div class="dialogRow">
+        <button value="ok" class="btn primary">閉じる</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- 履歴 -->
+  <dialog id="historyDialog">
+    <form method="dialog" class="dialog">
+      <h3>履歴（直近10回）</h3>
+      <div id="historyList" class="resultList"></div>
+      <div class="dialogRow">
+        <button value="ok" class="btn primary">閉じる</button>
+      </div>
+    </form>
+  </dialog>
 
   <script src="app.js"></script>
 </body>
