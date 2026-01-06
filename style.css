@@ -41,7 +41,7 @@ body{
 .main{ padding: 10px; }
 #pad{
   width: 100%;
-  height: calc(100vh - 330px);
+  height: calc(100vh - var(--topbar-h, 280px) - 18px);
   background: var(--pad-bg);
   border: 1px solid #e0e0e0;
   border-radius: 14px;
@@ -90,3 +90,47 @@ dialog::backdrop{ background: rgba(0,0,0,.25); }
 #boxScaleSlider{
   width: min(260px, 60vw);
 }
+
+
+/* --- UI compact/minimal --- */
+body.compact .btn{ padding: 6px 8px; font-size: 12px; border-radius: 9px; }
+body.compact .qbox{ padding: 6px 8px; }
+body.compact .prompt{ font-size: 16px; }
+body.compact .answerline{ font-size: 12px; }
+
+body.minimal .topbar .row.controls,
+body.minimal .topbar .row.controls[data-test-only],
+body.minimal .topbar .row.controls[data-practice-only]{
+  display:none !important;
+}
+body.minimal .hint{ display:none; }
+body.minimal .topbar{ padding-bottom: 8px; }
+
+.fab{
+  position: fixed;
+  right: 14px;
+  bottom: 14px;
+  z-index: 999;
+  width: 46px;
+  height: 46px;
+  border-radius: 999px;
+  border: 1px solid #d0d0d0;
+  background: #fff;
+  box-shadow: 0 6px 18px rgba(0,0,0,.12);
+  font-size: 20px;
+  cursor: pointer;
+}
+
+
+/* Always-visible minimal buttons under question */
+.miniControls{
+  display:flex;
+  flex-wrap: wrap;
+  gap:10px;
+  align-items:center;
+  margin-bottom: 8px;
+}
+#moreBtn{ background:#fff; }
+
+
+body.minimal .miniControls{ display:flex !important; }
