@@ -1,4 +1,4 @@
-const CACHE_NAME = "kanji-practice-v3-15";
+const CACHE_NAME = "kanji-practice-v3-17";
 const ASSETS = ["./index.html","./style.css","./app.js","./manifest.json","./sw.js"];
 self.addEventListener("install",(event)=>{event.waitUntil(caches.open(CACHE_NAME).then(c=>c.addAll(ASSETS)));});
 self.addEventListener("activate",(event)=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE_NAME).map(k=>caches.delete(k)))));});
