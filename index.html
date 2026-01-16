@@ -41,11 +41,10 @@
     <div class="row controls">
       <button id="showAnswerBtn" class="btn primary">正解を見る（押している間）</button>
       <button id="toggleTraceBtn" class="btn">なぞり（薄表示）</button>
-      <div class="scaleCtl" title="回答欄の大きさ">
-        <span class="muted">枠</span>
-        <input id="boxScaleSlider" type="range" min="-170" max="160" step="10" value="0" />
-        <span class="muted" id="boxScaleLabel">0%</span>
-      </div>
+      
+      <button id="boxSmallerBtn" class="btn" title="回答欄を小さく">－ 枠</button>
+      <button id="boxLargerBtn" class="btn" title="回答欄を大きく">＋ 枠</button>
+      <span class="muted" id="boxScaleLabel">枠：--%</span>
 <button id="clearBtn" class="btn danger">消す</button>
       <button id="randomBtn" class="btn" data-practice-only>ランダム</button>
       <button id="editBtn" class="btn" data-practice-only title="問題データを編集します">問題編集</button>
